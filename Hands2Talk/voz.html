@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Traductor - Hands2Talk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: #000000;
+            color: white;
+        }
+        .navbar img {
+            height: 50px;
+        }
+        .navbar ul {
+            list-style: none;
+            display: flex;
+            gap: 1rem;
+        }
+        .navbar ul li {
+            display: inline;
+        }
+        .navbar ul li a {
+            text-decoration: none;
+            color: white;
+            font-size: 1rem;
+        }
+        h1 {
+            color: #0044cc;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 80%;
+            position: relative;
+        }
+        .microphone-button {
+            font-size: 60px;
+            color: #0044cc;
+            cursor: pointer;
+            transition: color 0.3s, transform 0.3s;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .microphone-button:hover {
+            color: #003399;
+            transform: scale(1.1);
+        }
+        .microphone-button.start {
+            left: 10px;
+        }
+        .microphone-button.stop {
+            right: 10px;
+        }
+        #transcription {
+            background-color: white;
+            border: 2px solid #0044cc;
+            border-radius: 8px;
+            padding: 20px;
+            width: 100%;
+            max-width: 600px;
+            font-size: 20px;
+            min-height: 120px;
+            text-align: center;
+            margin: 0 auto;
+        }
+        table {
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 2px solid #0044cc;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #0044cc;
+            color: white;
+        }
+        .back-button {
+            display: block;
+            width: 200px;
+            margin: 20px auto;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="index.html"><img src="CASITA-removebg-preview.png" alt="Hands2Talk Logo"></a>
+        <ul>
+          <a href="home.html">Presentación</a>
+          <a href="Panel de control.html">Pantalla de control</a>
+          <a href="voz.html">Pantalla de monitoreo</a>
+        </ul>
+    </div>
+
+    <h1>Traductor de Voz a Texto</h1>
+
+    <div class="container">
+        <i class="fas fa-microphone microphone-button start" id="startButton"></i>
+        <div id="transcription">Transcripción aparecerá aquí...</div>
+        <i class="fas fa-stop microphone-button stop" id="stopButton"></i>
+    </div>
+
+    <table id="historyTable">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Transcripción</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+
+
+    <script>
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'es-ES';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+
+            const startButton = document.getElementById('startButton');
+            const stopButton = document.getElementById('stopButton');
+            const transcription = document.getElementById('transcription');
+            const historyTable = document.getElementById('historyTable').querySelector('tbody');
+
+            let transcriptCounter = 1;
+            let isRecording = false;
+
+            startButton.addEventListener('click', () => {
+                if (!isRecording) {
+                    recognition.start();
+                    console.log('Reconocimiento de voz iniciado');
+                    transcription.textContent = 'Escuchando...';
+                    isRecording = true;
+                }
+            });
+
+            stopButton.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                    console.log('Reconocimiento de voz detenido');
+                    transcription.textContent += '';
+                    isRecording = false;
+                }
+            });
+
+            recognition.onresult = (event) => {
+                let transcript = '';
+                for (let i = 0; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript + ' ';
+                }
+                console.log('Resultado de la transcripción:', transcript);
+                transcription.textContent = transcript;
+                addTranscriptToTable(transcript);
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Error en el reconocimiento de voz:', event.error);
+                transcription.textContent = `Error: ${event.error}`;
+            };
+
+            recognition.onend = () => {
+                console.log('El reconocimiento de voz ha terminado.');
+                if (isRecording) {
+                    isRecording = false;
+                }
+            };
+
+            function addTranscriptToTable(transcript) {
+                const row = document.createElement('tr');
+                const cellNumber = document.createElement('td');
+                const cellTranscript = document.createElement('td');
+
+                cellNumber.textContent = transcriptCounter++;
+                cellTranscript.textContent = transcript;
+
+                row.appendChild(cellNumber);
+                row.appendChild(cellTranscript);
+                historyTable.appendChild(row);
+            }
+        } else {
+            alert('Tu navegador no soporta la API de reconocimiento de voz.');
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de control</title>
+  <style>
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: Arial, sans-serif;
+    }
+
+    .hero {
+      background-image: url(fondo/pexels-rostislav-5011647.jpg);
+      height: 100vh;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+      color: white;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 1rem;
+      z-index: 1000;
+    }
+
+    .navbar img {
+      height: 40px;
+      display: none; /* Hide the logo */
+    }
+
+    .menu-toggle {
+      font-size: 1.5rem;
+      color: white;
+      cursor: pointer;
+      z-index: 1001; /* Ensure menu toggle is above navbar elements */
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -150px; /* Initially hidden offscreen */
+      width: 150px; /* Match the size of the second code */
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      color: white;
+      transition: left 0.3s ease;
+      padding: 1rem;
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .sidebar.show {
+      left: 0; /* Show when class 'show' is added */
+    }
+
+    .sidebar img {
+      width: 100px;
+      margin-bottom: 1rem;
+    }
+
+    .sidebar a {
+      color: white;
+      text-decoration: none;
+      display: block;
+      margin: 1rem 0;
+      font-size: 1.2rem;
+    }
+
+    .sidebar a:hover {
+      text-decoration: underline;
+    }
+
+    .title {
+      font-size: 3rem;
+      margin: 0;
+    }
+
+    .hidden {
+      display: none; /* Hide the sidebar when it's not active */
+    }
+
+    /* Estilos para el contenido de la segunda página */
+    body {
+      background: linear-gradient(135deg, #d4e0ff, #b3c6ff);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      height: 100vh;
+      margin: 0;
+      padding: 0;
+      animation: backgroundAnimation 5s ease infinite;
+    }
+
+    @keyframes backgroundAnimation {
+      0% { background: linear-gradient(135deg, #d4e0ff, #b3c6ff); }
+      50% { background: linear-gradient(135deg, #b3c6ff, #d4e0ff); }
+      100% { background: linear-gradient(135deg, #d4e0ff, #b3c6ff); }
+    }
+
+    .container {
+      width: 90%;
+      max-width: 1400px;
+      background-color: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      margin-top: 20px;
+      animation: slideIn 0.8s ease-out;
+    }
+
+    h1 {
+      color: #003366;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 2em;
+    }
+
+    .content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .buttons-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      width: 50%;
+      margin-bottom: 20px;
+    }
+
+    .button {
+      padding: 15px;
+      font-size: 16px;
+      color: white;
+      width: 200px;
+      background-color: #003366;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s, box-shadow 0.2s;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .button:hover {
+      background-color: #0059b3;
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .button:active {
+      animation: bounce 0.2s ease;
+    }
+    .control-buttons input {
+        margin: 5px;
+        padding: 10px 20px;
+        width: 200px;
+        height: 60px;   /* -----------------------------------------------------------largo y ancho para botones1, 2, 3, 4------------------------------------------------------------------- */
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #ddd;
+        color: #333;
+        transition: background-color 0.3s, box-shadow 0.2s, transform 0.2s;
+        box-shadow: 0 4px #999; /* Sombra para efecto de profundidad */
+    }
+    .control-buttons input:hover {
+        background-color: #9fa9e2 ; /* Cambiado a rojo */
+        color: white;
+        box-shadow: 0 6px #666; /* Sombra más pronunciada al pasar el mouse */
+    }
+    .control-buttons input:active {
+        background-color: #b30000; /* Color más oscuro al hacer clic */
+        box-shadow: 0 2px #666; /* Sombra reducida para simular presionado */
+        transform: translateY(2px); /* Efecto de hundido */
+    }
+
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      30% { transform: scale(0.9); }
+      50% { transform: scale(1.1); }
+      70% { transform: scale(0.95); }
+      100% { transform: scale(1); }
+    }
+
+    .image-container {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .image {
+      width: 100px;
+      height: 75px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      object-fit: cover;
+    }
+
+    .image:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .input-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 40%;
+      padding: 20px;
+      background-color: #f7f9ff;
+      border: 2px solid #c5d0f5;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      animation: slideInInput 0.6s ease-out;
+    }
+
+    .input-container label {
+      font-size: 18px;
+      color: #003366;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .input-container input[type="text"], .input-container select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: 2px solid #003366;
+      border-radius: 5px;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+      margin-bottom: 10px;
+      transition: border-color 0.3s;
+    }
+
+    .input-container input[type="text"]:focus, .input-container select:focus {
+      border-color: #0059b3;
+      outline: none;
+      box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="navbar">
+    <div class="menu-toggle" id="menuToggle">☰</div>
+  </div>
+
+  <div class="sidebar" id="sidebarMenu">
+    <a href="index.html"><img src="CASITA-removebg-preview.png" alt="Hands2Talk Logo"></a>
+    <a href="home.html">Presentación</a>
+    <a href="Panel de control.html">Pantalla de control</a>
+    <a href="voz.html">Pantalla de monitoreo</a>
+  </div>
+
+  <div class="container">
+      <h1>Práctica HTML</h1>
+
+      <div class="content">
+          <!-- Contenedor de botones -->
+          <div>
+              <div class="button-container">
+                <div class="control-buttons">
+               <input type="submit" value="Boton1">
+               <input type="hidden" name = '"Salida1"' value = "TRUE">
+             </div>
+
+             <div class="control-buttons">
+             <input type="submit" value="Boton2">
+             <input type="hidden" name = '"Salida1"' value = "TRUE">
+             </div>
+
+             <div class="control-buttons">
+            <input type="submit" value="Boton3">
+            <input type="hidden" name = '"Salida1"' value = "TRUE">
+          </div>
+
+          <div class="control-buttons">
+          <input type="submit" value="Boton4">
+          <input type="hidden" name = '"Salida1"' value = "TRUE">
+          </div>
+
+              </div>
+              <!-- Contenedor de imágenes justo debajo de los botones -->
+              <div class="image-container">
+                  <img src="https://via.placeholder.com/100x75" alt="Imagen 1" class="image">
+                  <img src="https://via.placeholder.com/100x75" alt="Imagen 2" class="image">
+                  <img src="https://via.placeholder.com/100x75" alt="Imagen 3" class="image">
+              </div>
+          </div>
+
+          <!-- Contenedor de entrada de datos y selección -->
+          <div class="input-container">
+              <label for="dataInput">Introduzca sus datos:</label>
+              <input type="text" id="dataInput" placeholder="Escriba aquí...">
+              <label for="recipeSelect">Seleccione una receta:</label>
+              <select id="recipeSelect">
+                  <option value="aqui creo que se pone la db de la receta">Receta 1</option>
+                  <option value="receta2">Receta 2</option>
+                  <option value="receta3">Receta 3</option>
+                  <option value="receta4">Receta 4</option>
+              </select>
+          </div>
+      </div>
+  </div>
+
+  <script>
+    function btON() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", '?"Motor"=true', true);
+      xhttp.send();
+    }
+    function btOFF() {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", '?"Motor"=false', true);
+      xhttp.send();
+    }
+    function actualizaInt(valor) {
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", '?"VariableInt"='+valor, true);
+      xhttp.send();
+    }
+    function numeros(nuevo) {
+      document.getElementById("num").innerHTML = nuevo;
+    }
+
+
+
+
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebarMenu = document.getElementById('sidebarMenu');
+
+    menuToggle.addEventListener('click', () => {
+      sidebarMenu.classList.toggle('hidden');
+      sidebarMenu.classList.toggle('show');
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!sidebarMenu.contains(event.target) && !menuToggle.contains(event.target)) {
+        if (sidebarMenu.classList.contains('show')) {
+          sidebarMenu.classList.add('hidden');
+          sidebarMenu.classList.remove('show');
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
